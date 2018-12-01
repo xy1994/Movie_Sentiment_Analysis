@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <title>Emotion Scatterplot</title>
+  <script type="text/javascript" src="d3.v3.min.js"></script>
+  <script src="jquery-3.2.0.js"></script>
+  <script src="heatmap.js"></script>  
+  <style = type = "text/css">
+              .axis path,
+              .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+              }
+            
+              .axis text {
+                font-family: sans-serif;
+                font-size: 11px;
+              }
+  div.tooltip { 
+    position: absolute;     
+    /*text-align: center;*/     
+    width: 297px;          
+    height: 100px;         
+    padding: 2px;       
+    font: 20px sans-serif;
+    color:white;
+    background:black;/*lightsteelblue;*/
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;  
+}
+div {
+            width:1000px; height:700px;float:left;
+        }
+
+.div-button{ position:absolute; left:100    px; top:550px;float:left;opacity:1.0; width:100px; height:70px;text-align:center}
+</style>
+</head>
+</body>
+ <div class = "div-button" id="option">
+    <input name="updateButton" 
+           type="button" 
+           value="return" 
+           onclick="updateData()" 
+</div>
+
+</body>
+<script type="text/javascript">
+            //Width and height
+	var w = 1300;
+	var h = 700;
+	var padding = 30;
+	var dataset = [];		//Initialize empty array
+	
+  // change the corrdinates of frozen(9) and star wars(4), captain_america_civil_war (12) to avoid overlap 
+	var  motion_movie = [[5.0713630406290955, 3.385812581913499], [5.70849582172702, 3.3704387186629527], [4.854433139534883, 3.455123546511628], [4.441789087093389, 3.1282528856243443], [5.440025094102886, 4.434598494353827], [5.3447008547008545, 3.8047008547008545], [6.206002202643171, 3.577285242290749], [5.081598513011152, 3.8201363073110284], [4.800389321468298, 3.866963292547275], [4.72888180764774, 3.5918018539976826], [5.982837837837838, 3.4230405405405406], [5.6947066326530615, 3.8362244897959184], [5.74226393629124, 3.5532138794084185], [5.443071895424836, 3.438071895424837], [5.9454566420664205, 3.670179889298893], [5.99574074074074, 3.5389506172839504], [3.729354990583804, 3.7694209039548023], [3.692679195804196, 3.8814466783216783], [5.747777101096224, 3.492783191230207], [5.488457008244994, 3.1845111896348643], [6.339648602878916, 3.6611981371718882], [5.260781383432963, 3.281063193851409], [5.853981937602628, 3.449425287356322], [4.855842607313195, 3.6254372019077903], [5.734928385416667, 3.608268229166667], [4.712986651835372, 3.71412680756396], [5.990245995423341, 3.7479977116704806], [4.707121922626026, 3.3610492379835875], [6.2810625, 3.49296875], [3.7270250723240115, 4.1259884281581485], [5.418421052631579, 3.810387811634349], [4.637104622871046, 3.576794403892944], [5.884082892416226, 3.6597442680776013], [4.3623569794050345, 4.03220823798627], [4.116775777414075, 4.113031914893617], [3.1990266963292546, 4.1092602892102335], [4.099560889929743, 4.195052693208431], [5.622727272727273, 3.4405894886363635], [5.10683615819209, 3.320056497175141], [4.695878746594006, 3.838658038147139], [6.0646909827760895, 3.924772036474164], [4.315617848970252, 3.9437643020594964], [4.5975979772439945, 3.647914032869785], [4.3952959830866805, 3.584963002114165], [5.663298722044728, 3.3301517571884984], [4.452110552763819, 3.7622361809045226], [4.246012064343163, 3.9344839142091153], [4.403164225941422, 3.781511506276151], [5.566182572614108, 3.5803941908713695], [4.785969738651994, 3.7305020632737276], [3.938556338028169, 4.188292253521126], [5.681324701195219, 3.653585657370518], [5.542236662106703, 4.145964432284542], [4.156753006475486, 4.0653098982423685], [5.54375, 3.7233770718232044], [3.2125879043600563, 3.9333684950773558], [4.9776585820895525, 3.625], [3.91625, 3.8754375], [3.916191904047976, 3.945352323838081], [3.7729811574697174, 3.9131897711978465], [4.71824942791762, 3.418192219679634], [6.062460815047022, 3.773746081504702], [4.959839816933639, 3.9032608695652176], [5.509410339256866, 3.831946688206785], [4.0307092198581564, 3.8690425531914894], [4.3207118353344764, 3.600257289879931], [4.83351282051282, 3.427], [5.204332615715823, 3.586248654467169], [4.82997542997543, 3.8431818181818183], [4.904868913857678, 3.694756554307116], [4.59054054054054, 4.151412776412776], [4.972859922178988, 3.7157587548638134], [5.405332302936631, 3.543083462132921], [5.7060344827586205, 3.4721902937420177], [4.472672672672672, 3.3464714714714714], [5.067148309705561, 3.118157033805889], [4.152804709141274, 3.7516274238227147], [4.805817422434368, 3.6772076372315037], [5.023066298342542, 3.7123388581952117], [5.107562154696133, 4.0291091160220995], [5.576515151515151, 3.385966810966811], [5.817372881355932, 3.7885593220338984], [4.556388564760794, 3.962777129521587], [5.148427152317881, 3.170157284768212], [5.377488558352403, 3.709525171624714], [5.7063646788990825, 3.1642201834862385], [6.040529841656516, 3.8528623629719854], [4.098842155009452, 3.856001890359168], [3.2853070175438597, 4.104229323308271], [3.3847877358490566, 3.7615271226415095], [4.3732092696629215, 3.89561095505618], [4.977431421446384, 3.536658354114713], [3.597736520854527, 3.841556459816887], [4.805093099671413, 3.271960569550931], [4.919981862152358, 3.6294135429262395], [3.2338323353293412, 4.091916167664671], [3.161019210245464, 4.303601921024547], [4.307252440725244, 3.5482914923291493], [5.483866279069767, 3.4391472868217052], [5.2092, 3.69372], [6.051825127334465, 3.535271646859083], [2.9715528781793843, 4.322289156626506], [4.394512195121951, 3.7408536585365852], [5.710342920353982, 3.781637168141593], [5.056048387096774, 3.8568548387096775]];
+
+var interested = ['rogue_one_', 'star_wars_episode_vii__the_force_awakens_the_story_awakens__the_table_read_', 'jurassic_world_', 'captain_america_civil_war_', 'the_secret_life_of_pets_', 'the_jungle_book_', 'sing_', 'moana_', 'doctor_strange_', 'star_trek_beyond_', 'central_intelligence_', 'arrival_', 'the_accountant_', 'petes_dragon_', 'storks_', '10_cloverfield_lane_', 'hacksaw_ridge_', 'my_big_fat_greek_wedding_2_', '13_hours_', 'lion_', 'war_dogs_', 'nerve_', 'risen_', 'the_finest_hours_', 'bridget_joness_baby_']
+
+var calm = ['bad_moms_', 'the_angry_birds_movie_', 'the_conjuring_2_', 'ride_along_2_', 'miss_peregrines_home_for_peculiar_children_', 'teenage_mutant_ninja_turtles_out_of_the_shadows_', 'the_purge_election_year_', 'alice_through_the_looking_glass_', 'boo_a_madea_halloween_', 'lights_out_', 'ice_age_collision_course_', 'the_boss_', 'jack_reacher_never_go_back_', 'fences_', 'office_christmas_party_', 'manchester_by_the_sea_', 'money_monster_', 'dirty_grandpa_', 'inferno_', 'moonlight_', 'benhur_']
+
+var nervous = ['furious_7_', 'minions_', 'jason_bourne_', 'xmen_apocalypse_', 'the_legend_of_tarzan_', 'sausage_party_', 'dont_breathe_', 'the_girl_on_the_train_', 'now_you_see_me_2_', 'why_him_', 'the_bfg_', 'neighbors_2_sorority_rising_', 'the_shallows_', 'barbershop_the_next_cut_', 'warcraft_the_beginning_', 'how_to_be_single_', 'mike_and_dave_need_wedding_dates_', 'patriots_day_', 'hail_caesar_', 'florence_foster_jenkins_', 'kevin_hart_what_now_']
+
+var scary = ['batman_v_superman_dawn_of_justice_', 'suicide_squad_', 'ghostbusters_', 'independence_day_resurgence_', 'allegiant_', 'london_has_fallen_', 'ouija_origin_of_evil_', 'the_5th_wave_', 'gods_of_egypt_', 'when_the_bough_breaks_', 'zoolander_2_', 'the_forest_']
+
+var excited = ['the_avengers_', 'finding_dory_', 'deadpool_', 'zootopia_', 'fantastic_beasts_and_where_to_find_them_', 'hidden_figures_', 'trolls_', 'kung_fu_panda_3_', 'sully_', 'the_magnificent_seven_', 'deepwater_horizon_', 'almost_christmas_', 'the_nice_guys_', 'hell_or_high_water_']
+
+var upset = ['logan_', 'avatar_', 'titanic_', 'frozen_', 'la_la_land_', 'passengers_', 'miracles_from_heaven_', 'me_before_you_', 'the_huntsman_winters_war_', 'kubo_and_the_two_strings_', 'allied_', 'collateral_beauty_']
+
+
+var movie_file_name = ['logan_', 'rogue_one_', 'avatar_', 'titanic_', 'star_wars_episode_vii__the_force_awakens_the_story_awakens__the_table_read_', 'jurassic_world_', 'the_avengers_', 'furious_7_', 'frozen_', 'minions_', 'finding_dory_', 'captain_america_civil_war_', 'the_secret_life_of_pets_', 'the_jungle_book_', 'deadpool_', 'zootopia_', 'batman_v_superman_dawn_of_justice_', 'suicide_squad_', 'sing_', 'moana_', 'fantastic_beasts_and_where_to_find_them_', 'doctor_strange_', 'hidden_figures_', 'jason_bourne_', 'star_trek_beyond_', 'xmen_apocalypse_', 'trolls_', 'la_la_land_', 'kung_fu_panda_3_', 'ghostbusters_', 'central_intelligence_', 'the_legend_of_tarzan_', 'sully_', 'bad_moms_', 'the_angry_birds_movie_', 'independence_day_resurgence_', 'the_conjuring_2_', 'arrival_', 'passengers_', 'sausage_party_', 'the_magnificent_seven_', 'ride_along_2_', 'dont_breathe_', 'miss_peregrines_home_for_peculiar_children_', 'the_accountant_', 'teenage_mutant_ninja_turtles_out_of_the_shadows_', 'the_purge_election_year_', 'alice_through_the_looking_glass_', 'petes_dragon_', 'the_girl_on_the_train_', 'boo_a_madea_halloween_', 'storks_', 'c_10_cloverfield_lane_', 'lights_out_', 'hacksaw_ridge_', 'allegiant_', 'now_you_see_me_2_', 'ice_age_collision_course_', 'the_boss_', 'london_has_fallen_', 'miracles_from_heaven_', 'deepwater_horizon_', 'why_him_', 'my_big_fat_greek_wedding_2_', 'jack_reacher_never_go_back_', 'fences_', 'me_before_you_', 'the_bfg_', 'neighbors_2_sorority_rising_', 'the_shallows_', 'office_christmas_party_', 'barbershop_the_next_cut_', 'c_13_hours_', 'lion_', 'the_huntsman_winters_war_', 'kubo_and_the_two_strings_', 'manchester_by_the_sea_', 'warcraft_the_beginning_', 'how_to_be_single_', 'mike_and_dave_need_wedding_dates_', 'war_dogs_', 'almost_christmas_', 'money_monster_', 'allied_', 'nerve_', 'risen_', 'the_nice_guys_', 'dirty_grandpa_', 'ouija_origin_of_evil_', 'the_5th_wave_', 'inferno_', 'patriots_day_', 'gods_of_egypt_', 'collateral_beauty_', 'hail_caesar_', 'when_the_bough_breaks_', 'zoolander_2_', 'moonlight_', 'the_finest_hours_', 'florence_foster_jenkins_', 'hell_or_high_water_', 'the_forest_', 'benhur_', 'bridget_joness_baby_', 'kevin_hart_what_now_'];
+
+    var movie_name = ['Logan', 'Rogue One', 'Avatar', 'Titanic', 'Star Wars: Episode VII - The Force Awakens: The Story Awakens - The Table Read', 'Jurassic World', 'The Avengers', 'Furious 7', 'Frozen', 'Minions', 'Finding Dory', 'Captain America: Civil War', 'The Secret Life of Pets', 'The Jungle Book', 'Deadpool', 'Zootopia', 'Batman v Superman: Dawn of Justice', 'Suicide Squad', 'Sing', 'Moana', 'Fantastic Beasts and Where to Find Them', 'Doctor Strange', 'Hidden Figures', 'Jason Bourne', 'Star Trek Beyond', 'X-Men: Apocalypse', 'Trolls', 'La La Land', 'Kung Fu Panda 3', 'Ghostbusters', 'Central Intelligence', 'The Legend of Tarzan', 'Sully', 'Bad Moms', 'The Angry Birds Movie', 'Independence Day: Resurgence', 'The Conjuring 2', 'Arrival', 'Passengers', 'Sausage Party', 'The Magnificent Seven', 'Ride Along 2', "Don't Breathe", "Miss Peregrine's Home for Peculiar Children", 'The Accountant', 'Teenage Mutant Ninja Turtles: Out of the Shadows', 'The Purge: Election Year', 'Alice Through the Looking Glass', "Pete's Dragon", 'The Girl on the Train', 'Boo! A Madea Halloween', 'Storks', '10 Cloverfield Lane', 'Lights Out', 'Hacksaw Ridge', 'Allegiant', 'Now You See Me 2', 'Ice Age: Collision Course', 'The Boss', 'London Has Fallen', 'Miracles from Heaven', 'Deepwater Horizon', 'Why Him?', 'My Big Fat Greek Wedding 2', 'Jack Reacher: Never Go Back', 'Fences', 'Me Before You', 'The BFG', 'Neighbors 2: Sorority Rising', 'The Shallows', 'Office Christmas Party', 'Barbershop: The Next Cut', '13 Hours', 'Lion', "The Huntsman: Winter's War", 'Kubo and the Two Strings', 'Manchester by the Sea', 'Warcraft: The Beginning', 'How to Be Single', 'Mike and Dave Need Wedding Dates', 'War Dogs', 'Almost Christmas', 'Money Monster', 'Allied', 'Nerve', 'Risen', 'The Nice Guys', 'Dirty Grandpa', 'Ouija: Origin of Evil', 'The 5th Wave', 'Inferno', 'Patriots Day', 'Gods of Egypt', 'Collateral Beauty', 'Hail, Caesar!', 'When the Bough Breaks', 'Zoolander 2', 'Moonlight', 'The Finest Hours', 'Florence Foster Jenkins', 'Hell or High Water', 'The Forest', 'Ben-Hur', "Bridget Jones's Baby", 'Kevin Hart: What Now?']
+
+    
+        
+		
+	var numDataPoints = movie_name.length; //Number of dummy data points   
+		for (var i = 0; i < numDataPoints; i++) 
+		{	//Loop numDataPoints ti
+
+			var point = {
+				"x": motion_movie[i][0],
+				"y": motion_movie[i][1],
+				"label":i,
+        "file_label": movie_file_name[i]
+			}
+		dataset.push(point);	//Add new number to array
+		}
+            //Create scale functions
+	var xScale = d3.scale.linear().domain([d3.min(dataset,function(d) { return d.x; }), d3.max(dataset,function(d) { return d.x; })]).range([padding*2, w -300- padding *2]);
+
+	var yScale = d3.scale.linear().domain([d3.min(dataset,function(d) { return d.y; }), d3.max(dataset, function(d) { return d.y; })]).range([h - padding*5, padding]);
+	
+	//Create SVG element
+	var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
+	// color scale 
+	var color = d3.scale.category10();
+  // Define the div for the tooltip
+var div = d3.select("body").append("div") 
+    .attr("class", "tooltip")       
+    .style("opacity", 0);
+
+svg
+          .append('image')
+          .attr('id', 'pic1')
+          .attr('xlink:href', 'bg5.jpg')
+          .attr("width", 1300)
+          .attr("height", 1090)
+          .attr("x", 0)
+          .attr("y", -240)
+          .attr("fill", "url(#pic1)")
+          .attr("opacity", 0.7);
+
+
+	var circles = svg.selectAll("circle")
+		  .data(dataset)
+      .enter()
+      .append("circle")
+      .attr("class", function(d) {return d.file_label});
+
+      circles.attr("cx",function(d){
+						return xScale(d.x) - padding; 
+        })
+      .attr("cy",function(d){
+			      return yScale(d.y) + padding/2;
+        })
+      .attr("r",function(d){
+            return 5;   
+      })
+      .on("mouseover", function(d){
+        var node = d3.selectAll('circle.' + d.file_label)
+                    .attr("r", 10)
+                    .attr("fill","white")
+
+            div.transition()   
+                .duration(200)    
+                .style("opacity", 0.9);    
+            $.getJSON("pure_movie.json",   
+            function(data) {
+            var i = 0;
+            console.log(movie_name[d.label]);
+            while(data[i].Title != movie_name[d.label]){
+                i = i + 1;
+            }
+            //console.log(data[i].Poster);
+            //div.html(movie_name[d.label]+'<img src=\''+ data[i].Poster + '\'>');
+            div.html("<span style='font-size: 20px"+";font-weight:bold"+"'>"+movie_name[d.label]+"</span>"+'<img src=\''+ 'poster/' + String(i + 1)+'.jpg' + '\'>');
+        });
+            if(d.y>3.9){
+            div.style("left", (d3.event.pageX + 30) + "px")   
+                .style("top", (d3.event.pageY - 30) + "px");
+              }
+            else if (d.y>3.5){
+              div.style("left", (d3.event.pageX + 30) + "px")   
+                .style("top", (d3.event.pageY - 200) + "px");
+              }
+              else{
+                div.style("left", (d3.event.pageX + 30) + "px")   
+                .style("top", (d3.event.pageY - 400) + "px");
+              }
+            })
+          .on("click", function(d) {
+            //alert(d.label);
+            var index = d.label*10;
+          location.href='test.html?name='+index;
+
+          })      
+        .on("mouseout", function(d) {
+        var node = d3.selectAll('circle')
+                    .attr("r", 5)
+                    .attr("fill",function(d){
+              if(interested.indexOf(d.file_label) > -1)
+                    return d3.rgb(255, 255,0).darker(0.5);
+                  else if(calm.indexOf(d.file_label) > -1)
+                    return "blue" ; //d3.hcl(-200, 32, 52).brighter(0.1);// steelblue""
+                  else if(nervous.indexOf(d.file_label) > -1)
+                    return "black"
+                  else if(excited.indexOf(d.file_label) > -1)
+                    return "orange"
+                  else if(scary.indexOf(d.file_label) > -1)
+                    return d3.rgb(255, 0, 0);
+                  else if(upset.indexOf(d.file_label) > -1)
+                    return "gray"
+
+        }); 
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        })
+        .attr("fill", function(d){
+              if(interested.indexOf(d.file_label) > -1)
+                    return d3.rgb(255, 255,0).darker(0.5);
+                  else if(calm.indexOf(d.file_label) > -1)
+                    return "blue" ; //d3.hcl(-200, 32, 52).brighter(0.1);// steelblue""
+                  else if(nervous.indexOf(d.file_label) > -1)
+                    return "black"
+                  else if(excited.indexOf(d.file_label) > -1)
+                    return "orange"
+                  else if(scary.indexOf(d.file_label) > -1)
+                    return d3.rgb(255, 0, 0);
+                  else if(upset.indexOf(d.file_label) > -1)
+                    return "gray"
+
+        });
+
+                // add legend 
+     var yellow = d3.rgb(255, 255,0).darker(0.5);
+     var five_emotion = ["interested", "calm", "nervous","excited","scary","upset"];
+     var five_color = ["yellow", "blue",  "black","orange", "red", "gray"];
+    // create legend 
+  var legendcolor = d3.scale.ordinal()
+            .domain(five_emotion)
+            .range(five_color);
+
+ // draw legend
+  var legend = svg.selectAll(".legend")
+      .data(legendcolor.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // draw legend colored rectangles
+  legend.append("circle")
+      .attr("r", 5)
+      .attr("cx", w - 200)
+      .attr("cy", function(d,i){
+          return i/2 + 10;
+      })
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", legendcolor);
+
+  // draw legend text
+  legend.append("text")
+      .attr("x", w - 180)
+      .attr("y", 9)
+      .attr("dy", ".45em")
+      .style("text-anchor", "start")
+      .text(function(d) { return d;})
+;
+
+// ** Update data section (Called from the onclick)
+function updateData() {
+
+   console.log("here")
+   location.href='demo.html?name='+ "demo";
+   
+}
+
+           
+/*
+	// create label 
+    svg.selectAll("text")
+   		.data(dataset)
+   		.enter()
+   		.append("text")
+   		.text(function(d){
+   				return d.label;
+   		
+   		})
+       .attr("x",function(d){
+            return xScale(d.x) - padding; 
+      })
+      .attr("y",function(d){
+            return yScale(d.y) + padding/2;
+               })
+      .attr("font", "sans-serif")
+   		.attr("font-size", "15px")
+   		.attr("fill", function(d){
+        return "black"; 
+           		});
+     */
+    // insert background image 
+   
+	/*
+		var defs= svg.append('defs')
+defs.append('pattern')
+    .attr('id', 'pic1')
+    .attr('patternUnits', 'userSpaceOnUse')
+    .attr('width', 115)
+    .attr('height', 100)
+    */
+  
+
+        </script>
+    </body>
+</html> 
